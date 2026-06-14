@@ -1,0 +1,68 @@
+/* Global design */
+:root {
+  --bg-gradient: linear-gradient(135deg, hsl(220,70%,20%), hsl(260,70%,30%));
+  --card-bg: hsla(0,0%,100%,0.1);
+  --text-primary: #fafafa;
+  --accent: hsl(260,80%,60%);
+  --font-family: 'Inter', sans-serif;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  background: var(--bg-gradient);
+  color: var(--text-primary);
+  font-family: var(--font-family);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.container {
+  background: var(--card-bg);
+  backdrop-filter: blur(12px);
+  border-radius: 12px;
+  padding: 2rem;
+  width: 90%;
+  max-width: 600px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+}
+
+h1 { text-align: center; margin-bottom: 1.5rem; }
+
+.upload-section, .input-section { display: flex; gap: 0.5rem; margin-bottom: 1rem; }
+
+.chat-box {
+  background: rgba(0,0,0,0.2);
+  border-radius: 8px;
+  max-height: 300px;
+  overflow-y: auto;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.message { margin: 0.5rem 0; }
+.user { text-align: right; color: var(--accent); }
+.bot { text-align: left; }
+
+input[type="text"] {
+  flex: 1;
+  padding: 0.5rem;
+  border: none;
+  border-radius: 6px;
+  background: rgba(255,255,255,0.1);
+  color: #fff;
+}
+
+button {
+  padding: 0.5rem 1rem;
+  background: var(--accent);
+  border: none;
+  border-radius: 6px;
+  color: #fff;
+  cursor: pointer;
+  transition: transform 0.1s;
+}
+
+button:hover { transform: scale(1.05); }

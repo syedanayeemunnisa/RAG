@@ -1,0 +1,10 @@
+fastapi
+uvicorn[standard]
+python-multipart
+pypdf
+langchain
+langchain-community
+cohere
+groq
+weaviate-client
+python-dotenv
