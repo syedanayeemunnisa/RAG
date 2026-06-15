@@ -7,6 +7,7 @@ const questionInput = document.getElementById("questionInput");
 const askBtn = document.getElementById("askBtn");
 const indexerBadge = document.getElementById("indexerBadge");
 const chatBadge = document.getElementById("chatBadge");
+const API_BASE_URL = "https://wvbrag-backend-production.up.railway.app/api";
 
 async function readApiJson(response) {
   const contentType = response.headers.get("content-type") || "";
@@ -50,7 +51,7 @@ function addMessage(sender, text) {
 // Check backend status on load
 async function checkStatus() {
   try {
-    const response = await fetch("/api/status");
+    const response = await fetch(`${API_BASE_URL}/status`);
     if (!response.ok) throw new Error("Server error");
     
     const data = await readApiJson(response);
@@ -95,7 +96,7 @@ uploadBtn.addEventListener("click", async () => {
   formData.append("file", file);
 
   try {
-    const response = await fetch("/api/upload", {
+    const response = await fetch(`${API_BASE_URL}/upload`, {
       method: "POST",
       body: formData
     });
@@ -140,7 +141,7 @@ async function handleQuery() {
   messagesContainer.scrollTop = messagesContainer.scrollHeight;
 
   try {
-    const response = await fetch("/api/query", {
+    const response = await fetch(`${API_BASE_URL}/query`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
