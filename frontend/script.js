@@ -8,6 +8,20 @@ const askBtn = document.getElementById("askBtn");
 const indexerBadge = document.getElementById("indexerBadge");
 const chatBadge = document.getElementById("chatBadge");
 
+async function readApiJson(response) {
+  const contentType = response.headers.get("content-type") || "";
+
+  if (!contentType.includes("application/json")) {
+    const body = await response.text();
+    const preview = body.trim().slice(0, 80);
+    throw new Error(
+      `Backend API did not return JSON. Check that /api is connected to your deployed FastAPI server. Response started with: ${preview}`
+    );
+  }
+
+  return response.json();
+}
+
 // Helper to escape HTML and format basic markdown (bold, inline code)
 function formatMessage(text) {
   let html = text
@@ -39,7 +53,7 @@ async function checkStatus() {
     const response = await fetch("/api/status");
     if (!response.ok) throw new Error("Server error");
     
-    const data = await response.json();
+    const data = await readApiJson(response);
     if (data.indexed) {
       indexerBadge.textContent = "Cached";
       indexerBadge.style.color = "#38bdf8";
@@ -61,7 +75,7 @@ async function checkStatus() {
     indexerBadge.style.borderColor = "rgba(239, 68, 68, 0.3)";
     chatBadge.textContent = "Offline";
     chatBadge.className = "badge";
-    addMessage("bot", "❌ Unable to connect to the backend server. Please make sure uvicorn is running on port 8000.");
+    addMessage("bot", "Unable to connect to the backend API. Make sure /api is proxied to your deployed FastAPI server.");
     console.error("Status check failed:", error);
   }
 }
@@ -87,11 +101,11 @@ uploadBtn.addEventListener("click", async () => {
     });
 
     if (!response.ok) {
-      const errData = await response.json();
+      const errData = await readApiJson(response);
       throw new Error(errData.detail || "Upload failed");
     }
 
-    const data = await response.json();
+    const data = await readApiJson(response);
     uploadStatus.textContent = `✅ Success! Indexed ${data.chunks} chunks from "${file.name}".`;
     
     indexerBadge.textContent = "Indexed";
@@ -135,11 +149,11 @@ async function handleQuery() {
     });
 
     if (!response.ok) {
-      const errData = await response.json();
+      const errData = await readApiJson(response);
       throw new Error(errData.detail || "Query failed");
     }
 
-    const data = await response.json();
+    const data = await readApiJson(response);
     // Remove loading message
     loadingDiv.remove();
     // Add real answer

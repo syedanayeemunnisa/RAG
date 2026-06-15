@@ -18,8 +18,12 @@ async def startup_event():
         print(f"Loaded {len(vector_store.texts)} chunks from cache: {cache_path}")
         return
 
-    pdf_path = r"C:\Users\SYEDA NAYEEM UNNISA\OneDrive\Desktop\contract.pdf"
-    print(f"Checking for hardcoded PDF at: {pdf_path}")
+    pdf_path = os.getenv("DEFAULT_PDF_PATH")
+    if not pdf_path:
+        print("DEFAULT_PDF_PATH is not set. Skipping auto-load.")
+        return
+
+    print(f"Checking for default PDF at: {pdf_path}")
     if os.path.exists(pdf_path):
         try:
             print("Loading and indexing hardcoded PDF (this may take a few seconds)...")
@@ -35,9 +39,9 @@ async def startup_event():
             else:
                 print("PDF was empty or text extraction failed.")
         except Exception as e:
-            print(f"Error loading hardcoded PDF on startup: {e}")
+            print(f"Error loading default PDF on startup: {e}")
     else:
-        print(f"Hardcoded PDF not found at {pdf_path}. Skipping auto-load.")
+        print(f"Default PDF not found at {pdf_path}. Skipping auto-load.")
 
 
 
