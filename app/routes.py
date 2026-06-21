@@ -52,9 +52,6 @@ async def upload_pdf(file: UploadFile = File(...)):
     embeddings = embed_texts(chunks, input_type="search_document")
     # Store in memory
     vector_store.add(embeddings, chunks)
-    # Save cache to disk so it persists across restarts
-    vector_store.save_to_disk("vector_store_cache.npz")
-
     # Cleanup uploaded file
     try:
         file_path.unlink()

@@ -1,20 +1,19 @@
 import uuid
 from pathlib import Path
+
 import cohere
 import groq
-from .weaviate_client import client as wv_client
+
 from .config import COHERE_API_KEY, GROQ_API_KEY
+from .weaviate_client import client as wv_client
 
-# Hard‑coded PDF path (as requested)
-DEFAULT_PDF_PATH = Path(r"C:/Users/SYEDA NAYEEM UNNISA/OneDrive/Desktop/contract.pdf")
-
-# Simple chunking: split into fixed-size pieces with overlap
 CHUNK_SIZE = 1000
 CHUNK_OVERLAP = 200
 TOP_K = 5
 
+
 def chunk_text(text: str):
-    """Return list of overlapping chunks from raw text."""
+    """Return overlapping chunks from raw text."""
     chunks = []
     i = 0
     while i < len(text):
@@ -23,11 +22,14 @@ def chunk_text(text: str):
         i += CHUNK_SIZE - CHUNK_OVERLAP
     return chunks
 
+
 def load_pdf(file_path: Path):
     """Extract raw text from a PDF file."""
     from pypdf import PdfReader
+
     reader = PdfReader(str(file_path))
     return "\n".join(page.extract_text() or "" for page in reader.pages)
+
 
 def embed_texts(texts):
     """Embed a list of text strings using Cohere."""
@@ -35,8 +37,9 @@ def embed_texts(texts):
     resp = co.embed(texts=texts, model="embed-english-v3.0")
     return resp.embeddings
 
+
 def upsert_chunks(chunks, embeddings, source_name: str):
-    """Store chunks + embeddings in Weaviate."""
+    """Store chunks and embeddings in Weaviate."""
     objects = [
         {
             "class": "DocumentChunk",
@@ -50,8 +53,9 @@ def upsert_chunks(chunks, embeddings, source_name: str):
         for obj in objects:
             batch.add_data_object(obj)
 
+
 def retrieve(query: str):
-    """Return top‑k relevant chunks for a query."""
+    """Return top-k relevant chunks for a query."""
     co = cohere.Client(COHERE_API_KEY)
     emb = co.embed(texts=[query], model="embed-english-v3.0").embeddings[0]
     result = (
@@ -61,6 +65,7 @@ def retrieve(query: str):
         .do()
     )
     return [item["text"] for item in result["data"]["Get"]["DocumentChunk"]]
+
 
 def generate_answer(question: str, context_chunks):
     """Call Groq LLM with context to produce an answer."""
@@ -75,17 +80,11 @@ def generate_answer(question: str, context_chunks):
     )
     return completion.choices[0].message.content
 
+
 def process_pdf_upload(file_path: Path, source_name: str):
-    """Full pipeline: load PDF → chunk → embed → upsert."""
+    """Full pipeline: load PDF, chunk, embed, and upsert."""
     text = load_pdf(file_path)
     chunks = chunk_text(text)
     embeddings = embed_texts(chunks)
     upsert_chunks(chunks, embeddings, source_name)
     return len(chunks)
-
-def preload_default_pdf():
-    """Load the hard‑coded PDF at startup (if it exists)."""
-    if DEFAULT_PDF_PATH.exists():
-        process_pdf_upload(DEFAULT_PDF_PATH, source_name=DEFAULT_PDF_PATH.name)
-    else:
-        print(f"[WARN] Default PDF not found at {DEFAULT_PDF_PATH}")

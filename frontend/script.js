@@ -63,7 +63,7 @@ async function checkStatus() {
       chatBadge.textContent = "Ready";
       chatBadge.className = "badge badge-pulse";
       
-      addMessage("bot", `⚡ System ready! Automatically loaded contract.pdf from cache (${data.chunks} chunks indexed). Ask me anything about the document.`);
+      addMessage("bot", `System ready. ${data.chunks} chunks are indexed. Ask me anything about the uploaded document.`);
     } else {
       indexerBadge.textContent = "Empty";
       chatBadge.textContent = "Waiting";
