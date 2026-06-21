@@ -7,7 +7,9 @@ const questionInput = document.getElementById("questionInput");
 const askBtn = document.getElementById("askBtn");
 const indexerBadge = document.getElementById("indexerBadge");
 const chatBadge = document.getElementById("chatBadge");
-const API_BASE_URL = "https://wvbrag-backend-production.up.railway.app/api";
+const API_BASE_URL = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
+  ? "/api"
+  : "https://wvbrag-backend-production.up.railway.app/api";
 
 async function readApiJson(response) {
   const contentType = response.headers.get("content-type") || "";
