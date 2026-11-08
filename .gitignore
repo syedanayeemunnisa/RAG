@@ -1,5 +1,21 @@
+# Video files
 *.mp4
+
+# Python cache
 __pycache__/
 *.py[cod]
+
+# Vector database cache
 vector_store_cache.npz
+
+# Temporary uploads
 temp_uploads/
+
+# Environment variables
+.env
+.env.*
+!.env.example
+
+# Credentials
+secrets.json
+credentials.json
